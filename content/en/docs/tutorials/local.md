@@ -1,7 +1,7 @@
 ---
 title: Run Vitess Locally
-description: Instructions for installing Vitess on your machine for testing purposes
-weight: 1
+description: Instructions for using Vitess on your machine for testing purposes
+weight: 3
 featured: true
 ---
 

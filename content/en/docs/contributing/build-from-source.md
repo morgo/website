@@ -26,7 +26,7 @@ In addition, Vitess requires the following software and libraries:
 
 2.  Install [MariaDB 10.0 (or later)](https://downloads.mariadb.org/) or [MySQL 5.6 (or later)](http://dev.mysql.com/downloads/mysql).
 
-    For this guide, we are going to install MySQL 5.7 from official apt repositories, but Vitess tests are written to run against MySQL, MariaDB and Percona Server:
+    For this guide, we are recommend installing MySQL 5.7 from official apt repositories, but Vitess tests are written to run against MySQL, MariaDB and Percona Server:
 
     ```sh
 
@@ -135,7 +135,7 @@ In addition, Vitess requires the following software and libraries:
 
     Note that the command indicates that the `mysql` executable should be found at `/usr/local/opt/mysql@5.7/bin/mysql`.
 
-3. Run `mysqld --version` and confirm that you are running the correct version of MariaDB or MySQL. The value should be 10 or higher for MariaDB and 5.6.x for MySQL.
+3. Run `mysqld --version` and confirm that you are running MySQL 5.7.
 
 4. Build Vitess using the commands below. Note that the `bootstrap.sh` script needs to download some dependencies. If your machine requires a proxy to access the Internet, you will need to set the usual environment variables (e.g. `http_proxy`, `https_proxy`, `no_proxy`).
 
@@ -195,26 +195,19 @@ Some Linux distributions ship with default file descriptor limits that are too l
 
 ## Starting a single keyspace cluster
 
-You can quickly test out your Vitess build by using one of the included local examples. Change to the local example directory:
+You can quickly test out your Vitess build by using one of the included local examples. `101_initial_cluster.sh` starts an initial Vitess cluster with a single keyspace:
 
 ``` sh
 cd examples/local
-```
-
-In this directory, you will see a group of script files `(*.sh)`. The first digit of each file name indicates the phase of example. The next two digits indicate the order in which to execute them. For example, ‘`101_initial_cluster.sh`’ is the first file of the first phase. We shall execute that now:
-
-``` sh
 ./101_initial_cluster.sh
 ```
-
-This will bring up the initial Vitess cluster with a single keyspace.
 
 ### Verify cluster
 
 Once successful, you should see the following state:
 
 ``` sh
-~/...vitess/examples/local> pgrep -fl vtdataroot
+$ pgrep -fl vtdataroot
 5451 zksrv.sh
 5452 zksrv.sh
 5453 zksrv.sh
@@ -237,7 +230,7 @@ Once successful, you should see the following state:
 You should now be able to connect to the cluster using the following command:
 
 ``` sh
-~/...vitess/examples/local> mysql -h 127.0.0.1 -P 15306
+$ mysql -h 127.0.0.1 -P 15306
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 mysql> show tables;
 +-----------------------+
@@ -252,7 +245,7 @@ mysql> show tables;
 
 You can also browse to the vtctld console using the following URL:
 
-``` sh
+```
 http://localhost:15000
 ```
 
