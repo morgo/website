@@ -29,7 +29,9 @@ In addition, Vitess requires the following software and libraries:
     For this guide, we are recommend installing MySQL 5.7 from official apt repositories, but Vitess tests are written to run against MySQL, MariaDB and Percona Server:
 
     ```sh
-
+    wget https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb
+    sudo dpkg -i mysql-apt-config*.deb
+    sudo apt-get install mysql-community-server
     ```
 
 3.  Uninstall or disable [AppArmor](https://wiki.ubuntu.com/AppArmor). Some versions of MySQL come with default AppArmor configurations that the Vitess tools don't yet recognize. This causes various permission failures when Vitess initializes MySQL instances through the `mysqlctl` tool. This is an issue only in test environments. If AppArmor is necessary in production, you can configure the MySQL instances appropriately without going through `mysqlctl`.
