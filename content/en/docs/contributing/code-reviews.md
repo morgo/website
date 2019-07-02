@@ -1,5 +1,6 @@
 ---
 title: Code Reviews
+weight: 2
 ---
 
 Every GitHub pull request must go through a code review and get approved before it will be merged into the master branch.
