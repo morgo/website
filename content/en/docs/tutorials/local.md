@@ -23,17 +23,26 @@ sudo apt-get install mysql-community-server
 
 _We recommend using MySQL 5.7 for this tutorial, but Vitess supports MySQL 5.6+ and MariaDB 10.0+._
 
-## Configure Environment
+## Disable AppArmor
 
-Navigate to the directory where you extraced the Vitess release, and then execute the following: 
+We recommend that you uninstall or disable AppArmor. Some versions of MySQL come with default AppArmor configurations that the Vitess tools don't yet recognize. This causes various permission failures when Vitess initializes MySQL instances through the mysqlctl tool. This is an issue only in test environments. If AppArmor is necessary in production, you can configure the MySQL instances appropriately without using `mysqlctl`:
 
 ```bash
-export VTROOT=$(pwd)
-export VTTOP=$(pwd)
+sudo service apparmor stop
+sudo service apparmor teardown
+sudo update-rc.d -f apparmor remove
+```
+
+## Configure Environment
+
+Add the following to your `.bashrc` file. Make sure to replace `/path/to/extracted-tarball` with the actual path to where you extracted the latest release file:
+
+```bash
+export VTROOT=/path/to/extracted-tarball
+export VTTOP=$VTROOT
 export MYSQL_FLAVOR=MySQL56
 export VTDATAROOT=${HOME}/vtdataroot
 export PATH=${VTROOT}/bin:${PATH}
-sudo service apparmor stop; sudo service apparmor teardown; sudo update-rc.d -f apparmor remove
 ```
 
 You are now ready to start your first cluster!
@@ -132,10 +141,9 @@ create table corder(
 ```
 
 The schema has been simplified to include only those fields that are significant to the example:
-
 * The `product` table contains the product information for all of the products.
-* The `customer` table has a customer_id that has an auto-increment. A typical customer table would have a lot more columns, and sometimes additional detail tables.
-* The `corder` table (named so because `order` is an SQL reserved word) has an order_id auto-increment column. It also has foreign keys into customer(customer_id) and product(sku).
+* The `customer` table has a `customer_id` that has an auto-increment. A typical customer table would have a lot more columns, and sometimes additional detail tables.
+* The `corder` table (named so because `order` is an SQL reserved word) has an `order_id` auto-increment column. It also has foreign keys into `customer(customer_id)` and `product(sku)`.
 
 ### VSchema
 
