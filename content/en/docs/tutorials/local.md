@@ -14,14 +14,15 @@ This guide covers installing Vitess locally for testing purposes, from pre-compi
 PlanetScale provides [weekly builds](https://github.com/planetscale/vitess-releases/releases) of Vitess for 64-bit Linux.
 
 1. Download and extract the [latest `.tar.gz` release](https://github.com/planetscale/vitess-releases/releases) from GitHub.
-2. Install MySQL 5.7 from MySQL Official Repos:
+2. Install MySQL:
 ```bash
-wget https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb
-sudo dpkg -i mysql-apt-config*.deb
-sudo apt-get install mysql-community-server
+# Apt based
+sudo apt-get install mysql-server
+# Yum based
+sudo yum install mysql-server
 ```
 
-_We recommend using MySQL 5.7 for this tutorial, but Vitess supports MySQL 5.6+ and MariaDB 10.0+._
+_Vitess supports MySQL 5.6+ and MariaDB 10.0+. We recommend MySQL 5.7 if your installation method provides a choice._
 
 ## Disable AppArmor
 
@@ -29,9 +30,11 @@ We recommend that you uninstall or disable AppArmor. Some versions of MySQL come
 
 ```bash
 sudo service apparmor stop
-sudo service apparmor teardown
+sudo service apparmor teardown # safe to ignore if this errors
 sudo update-rc.d -f apparmor remove
 ```
+
+Reboot to be sure that AppArmor is fully disabled.
 
 ## Configure Environment
 
@@ -49,18 +52,33 @@ You are now ready to start your first cluster!
 
 ## Start a single keyspace cluster
 
-A [keyspace](../overview/concepts.md#keyspace) in Vitess is a logical database consisting of multiple shards. For our first example, we are going to be using Vitess without sharding using a single keyspace. The examples directory containts a number of `*.sh` files. The first digit of each file name indicates the phase of example. The next two digits indicate the order in which to execute them. For example, ‘`101_initial_cluster.sh`’ is the first file of the first phase. We shall execute that now:
+A [keyspace](../overview/concepts.md#keyspace) in Vitess is a logical database consisting of multiple shards. For our first example, we are going to be using Vitess without sharding using a single keyspace. The file `101_initial_cluster.sh` is for example `1` phase `01`. Lets execute it now:
 
 ``` sh
 cd examples/local
 ./101_initial_cluster.sh
 ```
 
-This will bring up the initial Vitess cluster with a single keyspace.
+You should see output similar to the following:
 
-### Verify cluster
+```
+~/...vitess/examples/local> ./101_initial_cluster.sh
+enter zk2 env
+Starting zk servers...
+Waiting for zk servers to be ready...
+Started zk servers.
+Configured zk servers.
+enter zk2 env
+Starting vtctld...
+Access vtctld web UI at http://ryzen:15000
+Send commands with: vtctlclient -server ryzen:15999 ...
+enter zk2 env
+Starting MySQL for tablet zone1-0000000100...
+Starting MySQL for tablet zone1-0000000101...
+Starting MySQL for tablet zone1-0000000102...
+```
 
-Once successful, you should see the following state:
+You can also verify that the processes have started with `pgrep`:
 
 ``` sh
 ~/...vitess/examples/local> pgrep -fl vtdataroot
@@ -82,6 +100,14 @@ Once successful, you should see the following state:
 10283 vttablet
 10447 vtgate
 ```
+
+If you encounter any errors, such as ports already in use, you can kill the processes and start over:
+
+```bash
+pkill -f '(vtdataroot|VTDATAROOT)' # kill Vitess processes
+```
+
+## Connecting to your Cluster
 
 You should now be able to connect to the cluster using the following command:
 

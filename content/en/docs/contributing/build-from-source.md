@@ -11,12 +11,11 @@ If you run into issues or have questions, we recommend posting in our [Slack cha
 
 ## Manual Build
 
-The following sections explain the process for manually building Vitess on Linux and macOS. If you are new to Vitess, it is recommended to start with ##FIXME## instead.
+The following sections explain the process for manually building Vitess on Linux and macOS. If you are new to Vitess, it is recommended to start with the [local install](../tutorial/local.md) guide instead.
 
 ### Install Dependencies
 
-We currently test Vitess regularly on Ubuntu 14.04 (Trusty) and Debian 8 (Jessie).
-macOS 10.11 (El Capitan) and above should work as well. The installation instructions are [below](#macos).
+We currently test Vitess regularly on Ubuntu 14.04 (Trusty) and Debian 8 (Jessie).  macOS 10.11 (El Capitan) and above should work as well. The installation instructions are [below](#macos).
 
 #### Ubuntu and Debian
 
@@ -24,22 +23,22 @@ In addition, Vitess requires the following software and libraries:
 
 1.  [Install Go 1.11+](http://golang.org/doc/install).
 
-2.  Install [MariaDB 10.0 (or later)](https://downloads.mariadb.org/) or [MySQL 5.6 (or later)](http://dev.mysql.com/downloads/mysql).
+2. Install MySQL:
+```bash
+# Apt based
+sudo apt-get install mysql-server
+# Yum based
+sudo yum install mysql-server
+```
 
-    For this guide, we are recommend installing MySQL 5.7 from official apt repositories, but Vitess tests are written to run against MySQL, MariaDB and Percona Server:
-
-    ```sh
-    wget https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb
-    sudo dpkg -i mysql-apt-config*.deb
-    sudo apt-get install mysql-community-server
-    ```
+_Vitess supports MySQL 5.6+ and MariaDB 10.0+. We recommend MySQL 5.7 if your installation method provides a choice._
 
 3.  Uninstall or disable [AppArmor](https://wiki.ubuntu.com/AppArmor). Some versions of MySQL come with default AppArmor configurations that the Vitess tools don't yet recognize. This causes various permission failures when Vitess initializes MySQL instances through the `mysqlctl` tool. This is an issue only in test environments. If AppArmor is necessary in production, you can configure the MySQL instances appropriately without going through `mysqlctl`.
 
     ```sh
-    $ sudo service apparmor stop
-    $ sudo service apparmor teardown # it's safe to ignore if this errors
-    $ sudo update-rc.d -f apparmor remove
+    sudo service apparmor stop
+    sudo service apparmor teardown # safe to ignore if this errors
+    sudo update-rc.d -f apparmor remove
     ```
 
     Reboot to be sure that AppArmor is fully disabled.
