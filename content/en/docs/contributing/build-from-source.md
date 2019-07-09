@@ -9,7 +9,7 @@ featured: true
 If you run into issues or have questions, we recommend posting in our [Slack channel](https://vitess.slack.com), click the Slack icon in the top right to join. This is a very active community forum and a great place to interact with other users.
 {{< /info >}}
 
-## Manual Build
+## Build from Source
 
 The following sections explain the process for manually building Vitess on Linux and macOS. If you are new to Vitess, it is recommended to start with the [local install](../tutorial/local.md) guide instead.
 
@@ -114,7 +114,7 @@ _Vitess supports MySQL 5.6+ and MariaDB 10.0+. We recommend MySQL 5.7 if your in
     export GODEBUG=netdns=go
     ```
 
-### Build Vitess
+## Build Vitess
 
 1. Navigate to the directory where you want to download the Vitess source code and clone the Vitess Github repo. After doing so, navigate to the `src/vitess.io/vitess` directory.
 
@@ -125,20 +125,27 @@ _Vitess supports MySQL 5.6+ and MariaDB 10.0+. We recommend MySQL 5.7 if your in
     cd src/vitess.io/vitess
     ```
 
-2. If your selected database installed in a location other than `/usr/bin`, set the `VT_MYSQL_ROOT` variable to the root directory of your MariaDB installation. For example, if mysql is installed in `/usr/local/mysql`, run the following command.
+2. Set the `MYSQL_FLAVOR`:
+```sh
+# It is recommended to use MySQL56 even for MySQL 5.7 and 8.0. For MariaDB you can use MariaDB:
+export MYSQL_FLAVOR=MySQL56
+```
+
+3. If your selected database installed in a location other than `/usr/bin`, set the `VT_MYSQL_ROOT` variable to the root directory of your MySQL installation:
 
     ```sh
-    # export VT_MYSQL_ROOT=/usr/local/mysql
+    # For generic tarballs on Linux
+    export VT_MYSQL_ROOT=/usr/local/mysql
 
-    # on macOS, this is the correct value:
+    # On macOS with Homebrew
     export VT_MYSQL_ROOT=/usr/local/opt/mysql@5.7
     ```
 
     Note that the command indicates that the `mysql` executable should be found at `/usr/local/opt/mysql@5.7/bin/mysql`.
 
-3. Run `mysqld --version` and confirm that you are running MySQL 5.7.
+4. Run `mysqld --version` and confirm that you are running MySQL 5.7.
 
-4. Build Vitess using the commands below. Note that the `bootstrap.sh` script needs to download some dependencies. If your machine requires a proxy to access the Internet, you will need to set the usual environment variables (e.g. `http_proxy`, `https_proxy`, `no_proxy`).
+5. Build Vitess using the commands below. Note that the `bootstrap.sh` script needs to download some dependencies. If your machine requires a proxy to access the Internet, you will need to set the usual environment variables (e.g. `http_proxy`, `https_proxy`, `no_proxy`).
 
     Run the boostrap.sh script:
 
@@ -252,4 +259,4 @@ http://localhost:15000
 
 ### Next steps
 
-Congratulations! You now have a local vitess cluster up and running. You can complete additional exercises by following along with [Run Vitess Locally](#FIXME#) guide.
+Congratulations! You now have a local vitess cluster up and running. You can complete additional exercises by following along with [Run Vitess Locally](../tutorial/local.md) guide.
