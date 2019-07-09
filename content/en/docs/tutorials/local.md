@@ -5,67 +5,45 @@ weight: 3
 featured: true
 ---
 
+# Run Vitess Locally
+
+This guide covers installing Vitess locally for testing purposes, from pre-compiled binaries. We will launch 3 copies of `mysqld`, so it is recommended to have greater than 4GB RAM, as well as 20GB of available disk space.
+
 ## Install Packages
 
-PlanetScale provides weekly builds of Vitess for ##PLATFORMS##. These can be downloaded and used for local testing of Vitess.
+PlanetScale provides [weekly builds](https://github.com/planetscale/vitess-releases/releases) of Vitess for 64-bit Linux.
 
-#### Ubuntu and Debian
-
-__FIXME__
-
-Still need to install etcd I assume?
-
-#### Mac OS
-
-__FIXME__
-
-Still need to install etcd I assume?
-
-## Start a Vitess cluster
-
-*The following example will use a simple commerce database to illustrate how Vitess can take you through the journey of scaling from a single database to a fully distributed and sharded cluster. This is a fairly common story, and it applies to many use cases beyond e-commerce.*
-
-It’s 2019 and, no surprise to anyone, people are still buying stuff online. You recently attended the first half of a seminar on disruption in the tech industry and want to create a completely revolutionary e-commerce site. In classic tech postmodern fashion, you call your products widgets instead of a more meaningful identifier and it somehow fits.
-
-Naturally, you realize the need for a reliable transactional datastore. Because of the new generation of hipsters, you’re probably going to pull traffic away from the main industry players just because you’re not them. You’re smart enough to foresee the scalability you need, so you choose Vitess as your best scaling solution.
-
-### Prerequisites
-
-Before we get started, let’s get a few things out of the way.
-
-* Check system settings
-    * Some Linux distributions ship with default file descriptor limits that are too low for database servers. This issue could show up as the database crashing with the message “too many open files”.
-    * Check the system-wide file-max setting as well as user-specific ulimit values. We recommend setting them above 100K to be safe. The exact procedure may vary depending on your Linux distribution.
-* Configure environment variables
-    * If you are still in the same terminal window that you used to run the build commands, you can skip to the next step since the environment variables will already be set.
-    * If you’re adapting this example to your own deployment, the only environment variables required before running the scripts are VTROOT and VTDATAROOT.
-    * Set VTROOT to the parent of the Vitess source tree. For example, if you ran make build while in $HOME/vt/src/vitess.io/vitess, then you should set:
-
-``` sh
-export VTROOT=$HOME/vt
+1. Download and extract the [latest `.tar.gz` release](https://github.com/planetscale/vitess-releases/releases) from GitHub.
+2. Install MySQL 5.7 from MySQL Official Repos:
+```bash
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb
+sudo dpkg -i mysql-apt-config*.deb
+sudo apt-get install mysql-community-server
 ```
 
- * Set VTDATAROOT to the directory where you want data files and logs to be stored. For example
+_We recommend using MySQL 5.7 for this tutorial, but Vitess supports MySQL 5.6+ and MariaDB 10.0+._
 
-``` sh
-export VTDATAROOT=$HOME/vtdataroot
+## Configure Environment
+
+Navigate to the directory where you extraced the Vitess release, and then execute the following: 
+
+```bash
+export VTROOT=$(pwd)
+export VTTOP=$(pwd)
+export MYSQL_FLAVOR=MySQL56
+export VTDATAROOT=${HOME}/vtdataroot
+export PATH=${VTROOT}/bin:${PATH}
+sudo service apparmor stop; sudo service apparmor teardown; sudo update-rc.d -f apparmor remove
 ```
 
-**CAUTION**: Do not store any other critical files in that directory. The final cleanup script will delete everything underneath.
+You are now ready to start your first cluster!
 
-## Starting a single keyspace cluster
+## Start a single keyspace cluster
 
-So you searched keyspace on Google and got a bunch of stuff about NoSQL... what's the deal? It took a few hours, but after diving through the ancient Vitess scrolls you figure out that in the NewSQL world, keyspaces and databases are essentially the same thing when unsharded. Finally, it's time to get started.
-
-Change to the local example directory:
+A [keyspace](../overview/concepts.md#keyspace) in Vitess is a logical database consisting of multiple shards. For our first example, we are going to be using Vitess without sharding using a single keyspace. The examples directory containts a number of `*.sh` files. The first digit of each file name indicates the phase of example. The next two digits indicate the order in which to execute them. For example, ‘`101_initial_cluster.sh`’ is the first file of the first phase. We shall execute that now:
 
 ``` sh
 cd examples/local
-```
-
-In this directory, you will see a group of script files `(*.sh)`. The first digit of each file name indicates the phase of example. The next two digits indicate the order in which to execute them. For example, ‘`101_initial_cluster.sh`’ is the first file of the first phase. We shall execute that now:
-
-``` sh
 ./101_initial_cluster.sh
 ```
 
